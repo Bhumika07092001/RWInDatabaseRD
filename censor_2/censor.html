@@ -1,0 +1,183 @@
+<html>
+    <head>
+        <title>Censoring</title>
+    </head>
+    <body>
+
+        <div id="subheading">
+            <!-- webpage content goes here -->
+            <input type="text" id="input">
+            <button onclick="googleSignIn()">Sign in with Google</button>
+            <button onclick="signOut()">Sign out</button>
+
+
+            <button type="submit" id="button" onclick="saveMessage()">submit</button>
+            <p></p>
+        </div>
+
+        <div id="subheading1">
+            <!-- webpage content goes here -->
+            <p></p>
+        </div>
+
+
+        <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-app.js"></script>
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+
+        <!-- Add Firebase products that you want to use -->
+        <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-database.js"></script>
+
+        <script>
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+
+         apiKey: "AIzaSyBEwxFrkcPUg9zxonN2umIA1Z_E3X1tGP8",
+
+         authDomain: "webapp-1912c.firebaseapp.com",
+
+         projectId: "webapp-1912c",
+
+         storageBucket: "webapp-1912c.appspot.com",
+
+         messagingSenderId: "637487044305",
+
+         appId: "1:637487044305:web:8408e6e2fb3276cb7ad7f0",
+
+         measurementId: "G-K8MFHV3XSL"
+
+       };
+
+     
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        function googleSignIn(){
+        var provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth()
+  .signInWithPopup(provider)
+  .then((result) => {
+    /** @type {firebase.auth.OAuthCredential} */
+    var credential = result.credential;
+
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    var token = credential.accessToken;
+    // The signed-in user info.
+    // var user = result.user;
+    console.log("google sign in successful");
+    // IdP data available in result.additionalUserInfo.profile.
+      // ...
+  }).catch((error) => {
+    // Handle Errors here.
+
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    // The email of the user's account used.
+    var email = error.email;
+    // The firebase.auth.AuthCredential type that was used.
+    var credential = error.credential;
+    console.log(errorMessage);
+    // ...
+  });
+
+        }
+
+        function signOut(){
+            firebase.auth().signOut().then(() => {
+  // Sign-out successful.
+}).catch((error) => {
+  // An error happened.
+});
+        }
+       
+        function saveMessage(){
+        // Get the content element by its ID
+        var contentElement = document.getElementById('input').value;
+        var database = firebase.database();
+        const newMessage= database.ref().child('data');
+        const addMessage= newMessage.push({
+            message:contentElement
+        }
+        );
+        var dataRef= firebase.database().ref().child('data');
+        dataRef.once('value')
+        .then((snapshot)=>{
+            snapshot.forEach(childSnapshot => {
+                    const value = childSnapshot.val().message;
+                    console.log('Key value: ' + value);
+                    var parent = document.getElementById('subheading');
+                    if (parent) {
+                     const paragraphElement = document.createElement('p');
+                     paragraphElement.innerHTML = value;
+
+                     parent.appendChild(paragraphElement);
+                     } else {
+                     console.error('Element with ID "subheading" not found.');
+                     }
+                     })})
+                  console.log("key:",addMessage.key);
+        }
+    
+
+
+        // Get the inner HTML of the content element
+       
+        // var opinion = ''
+        // var database1 = firebase.database();
+        // database1.ref('global_feed').orderByKey().limitToLast(1).once('value').then(
+        //     snapshot => {
+        //         snapshot.forEach(childSnapshot => {
+        //             const value = childSnapshot.val().opinion;
+        //             console.log('Opinion value: ' + value);
+
+        //             opinion = value;
+                    
+
+        //             // contentElement.innerText = value;
+        //         })
+        //     }
+        // )
+
+        // const badWords= [];
+        // var database = firebase.database();
+        // database.ref('data').orderByKey().once('value').then(
+        //     snapshot => {
+        //         snapshot.forEach(childSnapshot => {
+        //             const value = childSnapshot.val().test;
+        //             console.log('Key value: ' + value);
+                    
+        //             badWords.push(value);
+        //             console.log('Arrary value: ' + badWords);
+                  
+        //         })
+        //         badWords.forEach(function (word) {
+        //                 var regex = new RegExp(word.split('').join('\\s*'), 'g');
+
+        //                 // Replace abusive words with asterisks using the regular expression
+        //                 opinion = opinion.replace(regex, function (match) {
+                
+        //                     return '*'.repeat(match.length);
+        //                 });
+                        
+        //             });
+        //                 console.log(opinion);
+        //                 contentElement.innerText = opinion;
+        //     }
+            
+        // )
+        
+
+
+        // var starCountRef = firebase.database().ref('testData');
+        // starCountRef.on('value', (snapshot) => {
+        //     const data = snapshot.val();
+        //     console.log('Node name: ' + snapshot.key);
+        //     console.log('Child name: ' + data.val);
+        // });
+        </script>
+    </body>
+</html>
